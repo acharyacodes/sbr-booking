@@ -1,42 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBR Tables & Chairs Rental</title>
-    <!-- Modern Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Rental Booking</title>
+    <!-- Sharp, minimalist geometric font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
 </head>
+
 <body>
-    <div class="background-decor blob-1"></div>
-    <div class="background-decor blob-2"></div>
-    
-    <main class="container glass-panel">
-        <header>
-            <h1>SBR Rentals</h1>
-            <p>Premium tables & chairs for your next party!</p>
-            
-            <div class="deals-badge">
-                <span class="deal-icon">✨</span>
-                <p><strong>Deals:</strong> Rent 4+ sets (1 Table/6 Chairs) for discounts!</p>
-            </div>
-        </header>
+    <main class="container">
+
+        <div class="header-divider">
+            <h2>Rental Request</h2>
+            <p class="subtitle">Select your date and equipment quantities.</p>
+        </div>
 
         <section class="booking-section">
             <form id="availability-form">
-                
+
                 <div class="form-group">
-                    <label for="date-picker">Event Date</label>
+                    <label for="date-picker">Date</label>
                     <input type="date" id="date-picker" required>
                 </div>
 
                 <div class="equipment-selection">
+
                     <div class="item-card">
-                        <div class="item-icon">🪑</div>
+                        <div class="item-icon">
+                            <!-- Minimalist Chair SVG -->
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 10v11" />
+                                <path d="M18 10v11" />
+                                <path d="M4 10h16" />
+                                <path d="M6 10c0-6 2-7 6-7s6 1 6 7" />
+                            </svg>
+                        </div>
                         <div class="item-details">
                             <h3>Chairs</h3>
-                            <p class="rate">$1.70 each</p>
+                            <p class="rate">$1.70 / ea</p>
                         </div>
                         <div class="quantity-control">
                             <button type="button" class="qty-btn minus" data-target="chairs">-</button>
@@ -46,10 +51,19 @@
                     </div>
 
                     <div class="item-card">
-                        <div class="item-icon">🪩</div>
+                        <div class="item-icon">
+                            <!-- Minimalist Table SVG -->
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 8h16" />
+                                <path d="M5 8v10" />
+                                <path d="M19 8v10" />
+                                <path d="M3 8c0-1.5 2-2 9-2s9 .5 9 2" />
+                            </svg>
+                        </div>
                         <div class="item-details">
                             <h3>Tables</h3>
-                            <p class="rate">$8.00 each</p>
+                            <p class="rate">$8.00 / ea</p>
                         </div>
                         <div class="quantity-control">
                             <button type="button" class="qty-btn minus" data-target="tables">-</button>
@@ -57,50 +71,63 @@
                             <button type="button" class="qty-btn plus" data-target="tables">+</button>
                         </div>
                     </div>
+
                 </div>
 
-                <button type="submit" id="check-btn" class="primary-btn pulse">Check Availability & Price</button>
-                <div id="loading" class="hidden">Checking database...</div>
+                <div class="divider"></div>
+
+                <button type="submit" id="check-btn" class="primary-btn">Check Availability</button>
+                <div id="loading" class="hidden loader">Processing request...</div>
             </form>
 
-            <div id="results-panel" class="hidden glass-panel-inner">
+            <div id="results-panel" class="hidden panel">
                 <div id="availability-status"></div>
-                
+
                 <div id="quote-details" class="hidden">
-                    <h2>Your Quote</h2>
-                    <div class="quote-row">
-                        <span>Items:</span>
-                        <span id="quote-items">0 Tables, 0 Chairs</span>
-                    </div>
-                    <div class="quote-row discount-row hidden" id="discount-row">
-                        <span>Package Applied:</span>
-                        <span id="quote-discount">None</span>
-                    </div>
-                    <div class="quote-row total-row">
-                        <span>Total Price:</span>
-                        <span id="quote-total">$0.00</span>
+
+                    <div class="quote-group">
+                        <div class="quote-row">
+                            <span class="label">Total Items</span>
+                            <span id="quote-items" class="value">0</span>
+                        </div>
+                        <div class="quote-row discount-row hidden" id="discount-row">
+                            <span class="label">Package Applied</span>
+                            <span id="quote-discount" class="value">None</span>
+                        </div>
+                        <div class="quote-row total-row">
+                            <span class="label">Estimated Total</span>
+                            <span id="quote-total" class="value">$0.00</span>
+                        </div>
                     </div>
 
                     <div class="checkout-form">
                         <div class="form-group">
-                            <label for="customer-name">Your Name</label>
-                            <input type="text" id="customer-name" placeholder="John Doe">
+                            <label for="customer-name">Full Name</label>
+                            <input type="text" id="customer-name" placeholder="Enter your name" required>
                         </div>
                         <button type="button" id="book-btn" class="primary-btn checkout">Confirm Booking</button>
                     </div>
                 </div>
             </div>
-            
-            <div id="success-panel" class="hidden glass-panel-inner success-anim">
-                 <div class="success-icon">✅</div>
-                 <h2>Booking Confirmed!</h2>
-                 <p>Your ID is: <strong id="success-id"></strong></p>
-                 <p>We'll see you on <span id="success-date"></span>.</p>
-                 <button type="button" id="reset-btn" class="secondary-btn">Book Another Date</button>
+
+            <div id="success-panel" class="hidden panel success-layout">
+                <div class="success-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h2>Booking Confirmed</h2>
+                <div class="receipt-details">
+                    <p>ID: <strong id="success-id"></strong></p>
+                    <p>Date: <strong id="success-date"></strong></p>
+                </div>
+                <button type="button" id="reset-btn" class="secondary-btn">New Request</button>
             </div>
         </section>
     </main>
 
     <script src="script.js"></script>
 </body>
+
 </html>
