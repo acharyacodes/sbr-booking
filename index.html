@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBR Tables & Chairs Rental</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="background-decor blob-1"></div>
+    <div class="background-decor blob-2"></div>
+    
+    <main class="container glass-panel">
+        <header>
+            <h1>SBR Rentals</h1>
+            <p>Premium tables & chairs for your next party!</p>
+            
+            <div class="deals-badge">
+                <span class="deal-icon">✨</span>
+                <p><strong>Deals:</strong> Rent 4+ sets (1 Table/6 Chairs) for discounts!</p>
+            </div>
+        </header>
+
+        <section class="booking-section">
+            <form id="availability-form">
+                
+                <div class="form-group">
+                    <label for="date-picker">Event Date</label>
+                    <input type="date" id="date-picker" required>
+                </div>
+
+                <div class="equipment-selection">
+                    <div class="item-card">
+                        <div class="item-icon">🪑</div>
+                        <div class="item-details">
+                            <h3>Chairs</h3>
+                            <p class="rate">$1.70 each</p>
+                        </div>
+                        <div class="quantity-control">
+                            <button type="button" class="qty-btn minus" data-target="chairs">-</button>
+                            <input type="number" id="qty-chairs" class="qty-input" value="0" min="0" required>
+                            <button type="button" class="qty-btn plus" data-target="chairs">+</button>
+                        </div>
+                    </div>
+
+                    <div class="item-card">
+                        <div class="item-icon">🪩</div>
+                        <div class="item-details">
+                            <h3>Tables</h3>
+                            <p class="rate">$8.00 each</p>
+                        </div>
+                        <div class="quantity-control">
+                            <button type="button" class="qty-btn minus" data-target="tables">-</button>
+                            <input type="number" id="qty-tables" class="qty-input" value="0" min="0" required>
+                            <button type="button" class="qty-btn plus" data-target="tables">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="check-btn" class="primary-btn pulse">Check Availability & Price</button>
+                <div id="loading" class="hidden">Checking database...</div>
+            </form>
+
+            <div id="results-panel" class="hidden glass-panel-inner">
+                <div id="availability-status"></div>
+                
+                <div id="quote-details" class="hidden">
+                    <h2>Your Quote</h2>
+                    <div class="quote-row">
+                        <span>Items:</span>
+                        <span id="quote-items">0 Tables, 0 Chairs</span>
+                    </div>
+                    <div class="quote-row discount-row hidden" id="discount-row">
+                        <span>Package Applied:</span>
+                        <span id="quote-discount">None</span>
+                    </div>
+                    <div class="quote-row total-row">
+                        <span>Total Price:</span>
+                        <span id="quote-total">$0.00</span>
+                    </div>
+
+                    <div class="checkout-form">
+                        <div class="form-group">
+                            <label for="customer-name">Your Name</label>
+                            <input type="text" id="customer-name" placeholder="John Doe">
+                        </div>
+                        <button type="button" id="book-btn" class="primary-btn checkout">Confirm Booking</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="success-panel" class="hidden glass-panel-inner success-anim">
+                 <div class="success-icon">✅</div>
+                 <h2>Booking Confirmed!</h2>
+                 <p>Your ID is: <strong id="success-id"></strong></p>
+                 <p>We'll see you on <span id="success-date"></span>.</p>
+                 <button type="button" id="reset-btn" class="secondary-btn">Book Another Date</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
