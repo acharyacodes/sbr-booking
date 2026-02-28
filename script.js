@@ -1,195 +1,305 @@
-const API_URL = 'https://script.google.com/macros/s/AKfycbynkkm6KEZ7kkCtZz4Sv-mxwTeP-Lg8uBjjIeoWdqSpdBbUMe965kcVOPgjQrya7EXA/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynkkm6KEZ7kkCtZz4Sv-mxwTeP-Lg8uBjjIeoWdqSpdBbUMe965kcVOPgjQrya7EXA/exec';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Elements ---
-    const qtyButtons = document.querySelectorAll('.qty-btn');
-    const form = document.getElementById('availability-form');
-    let currentQuote = null; // Store the quote for checkout
 
-    // Panels
-    const resultsPanel = document.getElementById('results-panel');
+    // Multi-step State
+    let currentStep = 1;
+    const totalSteps = 4;
+    const track = document.getElementById('carousel-track');
+    const progressFill = document.getElementById('progress-fill');
+    const stepIndicator = document.getElementById('step-indicator');
+
+    // Cached Quote Data (From Step 1 constraints)
+    let cachedQuoteTotal = 0;
+
+    // Step Elements
+    const stepLabels = ['Availability', 'Event Details', 'Add-ons', 'Summary'];
+    const steps = [
+        document.getElementById('step-1'),
+        document.getElementById('step-2'),
+        document.getElementById('step-3'),
+        document.getElementById('step-4')
+    ];
+
+    // Navigation Buttons
+    const btnCheck = document.getElementById('btn-check'); // Step 1
+    const btnNext2 = document.getElementById('btn-next-2'); // Step 2
+    const btnNext3 = document.getElementById('btn-next-3'); // Step 3
+    const btnSubmit = document.getElementById('btn-submit'); // Step 4
+    const btnPrevs = document.querySelectorAll('.btn-prev');
+    const btnReset = document.getElementById('reset-btn');
+
+    // UI Elements
+    const form = document.getElementById('booking-form');
+    const loading = document.getElementById('loading');
+    const availabilityStatus = document.getElementById('availability-status');
     const successPanel = document.getElementById('success-panel');
-    const statusDiv = document.getElementById('availability-status');
-    const quoteDetailsDiv = document.getElementById('quote-details');
-    const loadingDiv = document.getElementById('loading');
 
-    // Quote specific spans
-    const quoteItemsDisplay = document.getElementById('quote-items');
-    const quoteDiscountDisplay = document.getElementById('quote-discount');
-    const quoteTotalDisplay = document.getElementById('quote-total');
-    const discountRow = document.getElementById('discount-row');
+    // Helper: Update Carousel Position
+    function updateCarousel() {
+        const offset = (currentStep - 1) * 100 * -1;
+        track.style.transform = `translateX(${offset}%)`;
 
-    // Action buttons
-    const checkBtn = document.getElementById('check-btn');
-    const bookBtn = document.getElementById('book-btn');
-    const resetBtn = document.getElementById('reset-btn');
+        // Update Indicator
+        progressFill.style.width = `${(currentStep / totalSteps) * 100}%`;
+        stepIndicator.textContent = `Step ${currentStep} of ${totalSteps}: ${stepLabels[currentStep - 1]}`;
 
-    // Disable past dates in date picker
-    const datePicker = document.getElementById('date-picker');
-    const today = new Date().toISOString().split('T')[0];
-    datePicker.setAttribute('min', today);
-
-    // --- Event Listeners ---
-
-    // Quantity Plus/Minus buttons logic
-    qtyButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const targetId = `qty-${e.target.dataset.target}`;
-            const input = document.getElementById(targetId);
-            const isPlus = e.target.classList.contains('plus');
-
-            let val = parseInt(input.value) || 0;
-            if (isPlus) {
-                val++;
-            } else if (val > 0) {
-                val--;
-            }
-            input.value = val;
-
-            // Hide previous results if they change the quantities
-            resultsPanel.classList.add('hidden');
-        });
-    });
-
-    // Hide results if they change the date
-    datePicker.addEventListener('change', () => {
-        resultsPanel.classList.add('hidden');
-    });
-
-    // Handle "Check Availability"
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const targetDate = datePicker.value;
-        const tablesReq = parseInt(document.getElementById('qty-tables').value) || 0;
-        const chairsReq = parseInt(document.getElementById('qty-chairs').value) || 0;
-
-        if (tablesReq === 0 && chairsReq === 0) {
-            alert("Please select at least 1 table or chair to rent.");
-            return;
-        }
-
-        // UI State
-        checkBtn.classList.add('hidden');
-        loadingDiv.classList.remove('hidden');
-        resultsPanel.classList.add('hidden');
-        statusDiv.className = '';
-        statusDiv.innerHTML = '';
-
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Apps script prefers this to avoid complex CORS preflights
-                body: JSON.stringify({
-                    action: 'check_availability',
-                    date: targetDate,
-                    tables: tablesReq,
-                    chairs: chairsReq
-                })
-            });
-
-            if (!response.ok) throw new Error('Failed to connect to server.');
-
-            const data = await response.json();
-
-            // Show Status
-            resultsPanel.classList.remove('hidden');
-
-            if (data.is_available) {
-                statusDiv.className = 'status-msg status-success';
-                statusDiv.innerHTML = '✨ Items Available!';
-
-                // Show Quote details
-                quoteDetailsDiv.classList.remove('hidden');
-                quoteItemsDisplay.innerText = `${tablesReq} Tables, ${chairsReq} Chairs`;
-
-                const quote = data.quote;
-                currentQuote = quote; // save for booking
-
-                if (quote.full_sets_applied >= 4) {
-                    discountRow.classList.remove('hidden');
-                    quoteDiscountDisplay.innerText = quote.discount_applied;
-                } else {
-                    discountRow.classList.add('hidden');
-                }
-
-                quoteTotalDisplay.innerText = `$${quote.total_price.toFixed(2)}`;
-
+        // Handle Visibility for Focus/Accessibility
+        steps.forEach((step, index) => {
+            if (index + 1 === currentStep) {
+                step.classList.add('active');
             } else {
-                statusDiv.className = 'status-msg status-error';
-                statusDiv.innerHTML = `⚠️ Not enough inventory.<br><small>We only have ${data.available_tables} tables and ${data.available_chairs} chairs left on this date.</small>`;
-                quoteDetailsDiv.classList.add('hidden');
+                step.classList.remove('active');
             }
+        });
+    }
 
-        } catch (error) {
-            alert("Error: " + error.message + "\nMake sure the Python backend is running!");
-        } finally {
-            checkBtn.classList.remove('hidden');
-            loadingDiv.classList.add('hidden');
+    // Helper: Basic Field Validation for current step
+    function validateStep(stepNum) {
+        const currentStepEl = document.getElementById(`step-${stepNum}`);
+        const inputs = currentStepEl.querySelectorAll('input:required');
+        let isValid = true;
+
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                input.reportValidity();
+                isValid = false;
+            }
+        });
+
+        // Custom validation for quantities on step 1
+        if (stepNum === 1 && isValid) {
+            const tables = parseInt(document.getElementById('qty-tables').value) || 0;
+            const chairs = parseInt(document.getElementById('qty-chairs').value) || 0;
+            if (tables === 0 && chairs === 0) {
+                showStatus('Please select at least one item.', 'error');
+                isValid = false;
+            }
         }
-    });
 
-    // Handle "Confirm Booking"
-    bookBtn.addEventListener('click', async () => {
-        const customerName = document.getElementById('customer-name').value.trim();
-        if (!customerName) {
-            alert("Please enter your name to confirm the booking.");
-            return;
+        // Custom validation for Radio buttons on step 2 & 3
+        if (isValid && (stepNum === 2 || stepNum === 3)) {
+            const radioGroups = currentStepEl.querySelectorAll('.radio-group');
+            radioGroups.forEach(group => {
+                const radios = group.querySelectorAll('input[type="radio"]:required');
+                if (radios.length > 0) {
+                    const name = radios[0].name;
+                    const checked = document.querySelector(`input[name="${name}"]:checked`);
+                    if (!checked) {
+                        radios[0].setCustomValidity('Please select an option.');
+                        radios[0].reportValidity();
+                        isValid = false;
+                    } else {
+                        radios[0].setCustomValidity(''); // clear
+                    }
+                }
+            });
         }
 
-        const targetDate = datePicker.value;
-        const tablesReq = parseInt(document.getElementById('qty-tables').value) || 0;
-        const chairsReq = parseInt(document.getElementById('qty-chairs').value) || 0;
+        return isValid;
+    }
 
-        bookBtn.disabled = true;
-        bookBtn.innerText = 'Processing...';
+    // Helper: Status Message
+    function showStatus(message, type) {
+        availabilityStatus.textContent = message;
+        availabilityStatus.classList.remove('hidden', 'status-error', 'status-success');
+        availabilityStatus.classList.add(`status-${type}`);
+    }
+
+    function hideStatus() {
+        availabilityStatus.classList.add('hidden');
+    }
+
+    // --- STEP 1: Check Availability ---
+    btnCheck.addEventListener('click', async () => {
+        hideStatus();
+        if (!validateStep(1)) return;
+
+        const date = document.getElementById('date-picker').value;
+        const tables = document.getElementById('qty-tables').value;
+        const chairs = document.getElementById('qty-chairs').value;
+
+        btnCheck.disabled = true;
+        btnCheck.textContent = 'Checking...';
+        loading.classList.remove('hidden');
 
         try {
-            const response = await fetch(API_URL, {
+            const response = await fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({
-                    action: 'book',
-                    date: targetDate,
-                    customer_name: customerName,
-                    tables: tablesReq,
-                    chairs: chairsReq
+                    action: 'check_availability',
+                    date: date,
+                    tables: tables, // ensure numbers
+                    chairs: chairs
                 })
             });
 
-            const data = await response.json();
+            const result = await response.json();
 
-            if (!response.ok) {
-                // E.g. someone booked the last items while they were typing their name
-                throw new Error(data.detail || 'Booking failed');
+            if (result.status === 'success' && result.data.available) {
+                // Save the base quote
+                cachedQuoteTotal = result.data.quote.total_price;
+                document.getElementById('step1-total').textContent = `$${cachedQuoteTotal.toFixed(2)}`;
+                document.getElementById('step1-quote').classList.remove('hidden');
+
+                // Allow user a moment to see the success before sliding
+                setTimeout(() => {
+                    currentStep = 2;
+                    updateCarousel();
+                }, 800);
+            } else {
+                let errorMsg = 'Selected items are not available on this date.';
+                if (result.message) {
+                    errorMsg = result.message;
+                } else if (result.data && result.data.issues && result.data.issues.length > 0) {
+                    errorMsg = `Not enough inventory: ${result.data.issues.join(', ')}`;
+                }
+                showStatus(errorMsg, 'error');
             }
-
-            // Success!
-            form.classList.add('hidden');
-            resultsPanel.classList.add('hidden');
-            successPanel.classList.remove('hidden');
-
-            document.getElementById('success-id').innerText = data.booking_id;
-            // Format date nicely
-            const dateObj = new Date(targetDate + 'T12:00:00'); // avoid timezone issues
-            document.getElementById('success-date').innerText = dateObj.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
-
         } catch (error) {
-            alert(error.message);
+            showStatus(`Client Error: ${error.message} (Check console for details)`, 'error');
+            console.error(error);
         } finally {
-            bookBtn.disabled = false;
-            bookBtn.innerText = 'Confirm Booking';
+            btnCheck.disabled = false;
+            btnCheck.textContent = 'Check Availability';
+            loading.classList.add('hidden');
         }
     });
 
-    // Handle "Book Another Date" (Reset)
-    resetBtn.addEventListener('click', () => {
-        document.getElementById('qty-tables').value = 0;
-        document.getElementById('qty-chairs').value = 0;
-        document.getElementById('customer-name').value = '';
-        datePicker.value = '';
+    // --- STEP 2: Event Details -> Step 3 ---
+    btnNext2.addEventListener('click', () => {
+        if (!validateStep(2)) return;
+        currentStep = 3;
+        updateCarousel();
+    });
 
+    // --- STEP 3: Add-ons -> Step 4 (Quote Build) ---
+    btnNext3.addEventListener('click', () => {
+        if (!validateStep(3)) return;
+
+        // Calculate Add-ons
+        const setupOption = document.querySelector('input[name="setup-option"]:checked');
+        const setupFee = parseFloat(setupOption.dataset.cost || 0);
+
+        const finalTotal = cachedQuoteTotal + setupFee;
+        const finalDeposit = finalTotal * 0.50;
+
+        // Update Step 4 DOM
+        document.getElementById('final-base').textContent = `$${cachedQuoteTotal.toFixed(2)}`;
+        document.getElementById('final-fees').textContent = `$${setupFee.toFixed(2)}`;
+        document.getElementById('final-total').textContent = `$${finalTotal.toFixed(2)}`;
+        document.getElementById('final-deposit').textContent = `$${finalDeposit.toFixed(2)}`;
+
+        currentStep = 4;
+        updateCarousel();
+    });
+
+    // --- PREVIOUS BUTTONS ---
+    btnPrevs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (currentStep > 1) {
+                currentStep--;
+                updateCarousel();
+            }
+        });
+    });
+
+    // --- STEP 4: Final Booking Submission ---
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Final sanity validation
+        if (!validateStep(4)) return;
+
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = 'Submitting...';
+        loading.classList.remove('hidden');
+
+        // Gather the massive payload
+        const payload = {
+            action: 'book',
+            // Step 1
+            date: document.getElementById('date-picker').value,
+            tables: document.getElementById('qty-tables').value,
+            chairs: document.getElementById('qty-chairs').value,
+            // Step 2
+            name: document.getElementById('customer-name').value,
+            phone: document.getElementById('customer-phone').value,
+            time: document.getElementById('event-time').value,
+            addressType: document.querySelector('input[name="address-type"]:checked').value,
+            address: document.getElementById('dropoff-address').value,
+            // Step 3
+            setupOption: document.querySelector('input[name="setup-option"]:checked').value,
+            agreeTrash: document.querySelector('input[name="agree-trash"]').checked,
+            agreeFolding: document.querySelector('input[name="agree-folding"]').checked,
+            // Step 4
+            agreeWaiver: document.querySelector('input[name="agree-waiver"]').checked,
+            signature: document.getElementById('e-signature').value
+        };
+
+        try {
+            const response = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                form.classList.add('hidden');
+                successPanel.classList.remove('hidden');
+
+                document.getElementById('success-id').textContent = result.data.booking_id;
+                document.getElementById('success-date').textContent = payload.date;
+                document.getElementById('success-deposit').textContent = document.getElementById('final-deposit').textContent;
+            } else {
+                alert('Error processing booking: ' + (result.message || 'Unknown error'));
+            }
+        } catch (error) {
+            alert('Error communicating with the server. Please try again.');
+            console.error(error);
+        } finally {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Confirm Booking';
+            loading.classList.add('hidden');
+        }
+    });
+
+    // --- Quantity Buttons (+/-) Logic ---
+    const plusBtns = document.querySelectorAll('.qty-btn.plus');
+    const minusBtns = document.querySelectorAll('.qty-btn.minus');
+
+    plusBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = `qty-${btn.dataset.target}`;
+            const input = document.getElementById(targetId);
+            input.value = parseInt(input.value) + 1;
+        });
+    });
+
+    minusBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = `qty-${btn.dataset.target}`;
+            const input = document.getElementById(targetId);
+            if (parseInt(input.value) > 0) {
+                input.value = parseInt(input.value) - 1;
+            }
+        });
+    });
+
+    // Reset Flow
+    btnReset.addEventListener('click', () => {
+        form.reset();
+        cachedQuoteTotal = 0;
+        document.getElementById('step1-quote').classList.add('hidden');
         successPanel.classList.add('hidden');
         form.classList.remove('hidden');
+        currentStep = 1;
+        updateCarousel();
     });
+
+    // Initial setup
+    updateCarousel();
 });

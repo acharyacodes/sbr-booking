@@ -5,6 +5,7 @@
     --gray-200: #e5e7eb;
     --gray-100: #f3f4f6;
     --white: #ffffff;
+    --error: #dc2626;
 }
 
 * {
@@ -14,27 +15,26 @@
 }
 
 body {
-    /* Use a very clean, geometric sans-serif */
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--white);
     color: var(--black);
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    /* better for long scrolling forms on mobile */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Main Container */
 .container {
     width: 100%;
-    max-width: 480px;
+    max-width: 540px;
     padding: 2.5rem;
-    margin: 0 auto;
+    margin: 2rem auto;
 }
 
-/* Typography */
+/* Typography & Headers */
 h2 {
     font-size: 1.5rem;
     font-weight: 600;
@@ -42,10 +42,37 @@ h2 {
     margin-bottom: 0.25rem;
 }
 
+h3 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 0.5rem;
+}
+
 .subtitle {
     font-size: 0.95rem;
     color: var(--gray-400);
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.step-desc {
+    font-size: 0.9rem;
+    color: var(--gray-400);
+    margin-bottom: 2rem;
+}
+
+.help-text {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    margin-bottom: 0.75rem;
+    display: block;
 }
 
 .header-divider {
@@ -54,23 +81,71 @@ h2 {
     margin-bottom: 2rem;
 }
 
-.divider {
-    height: 1px;
-    background-color: var(--gray-200);
-    margin: 2rem 0;
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--gray-100);
+    margin-bottom: 0.5rem;
+    position: relative;
 }
 
-/* Form Elements */
+.progress-fill {
+    height: 100%;
+    background: var(--black);
+    transition: width 0.4s ease;
+}
+
+.step-indicator {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--black);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Carousel Layout */
+.carousel-container {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+    /* Remove fixed height, but hide overflow X */
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    align-items: flex-start;
+}
+
+.carousel-step {
+    min-width: 100%;
+    padding-right: 2px;
+    /* Prevent text clipping on right edge */
+    transition: opacity 0.3s;
+    opacity: 0;
+    pointer-events: none;
+    height: 0;
+    overflow: hidden;
+}
+
+.carousel-step.active {
+    opacity: 1;
+    pointer-events: auto;
+    height: auto;
+    overflow: visible;
+}
+
+/* Basic Form Elements */
 .form-group {
     margin-bottom: 1.5rem;
     display: flex;
     flex-direction: column;
 }
 
-label,
-.label {
+label:not(.radio-label):not(.checkbox-label) {
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--gray-900);
@@ -78,30 +153,138 @@ label,
 }
 
 input[type="date"],
-input[type="text"] {
+input[type="text"],
+input[type="tel"],
+input[type="time"] {
     padding: 1rem;
     border: 1px solid var(--gray-200);
     border-radius: 0;
-    /* Sharp edges */
     font-family: inherit;
     font-size: 1rem;
     color: var(--black);
     background-color: var(--white);
     outline: none;
     transition: border-color 0.2s;
+    width: 100%;
 }
 
-input[type="date"]:focus,
-input[type="text"]:focus {
+input:focus {
     border-color: var(--black);
 }
 
-/* Equipment Selection */
+input:invalid:not(:placeholder-shown) {
+    border-color: var(--error);
+}
+
+/* Custom Radios and Checkboxes */
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.radio-group.vertical {
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.radio-label,
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    font-size: 0.95rem;
+    user-select: none;
+}
+
+.radio-label input,
+.checkbox-label input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.custom-radio,
+.custom-checkbox {
+    min-width: 20px;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--gray-400);
+    margin-right: 0.75rem;
+    display: inline-block;
+    position: relative;
+    background: var(--white);
+    margin-top: 2px;
+}
+
+.custom-radio {
+    border-radius: 50%;
+}
+
+.radio-label input:checked~.custom-radio {
+    border-color: var(--black);
+    border-width: 6px;
+}
+
+.checkbox-label input:checked~.custom-checkbox {
+    background-color: var(--black);
+    border-color: var(--black);
+}
+
+.checkbox-label input:checked~.custom-checkbox:after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 4px;
+    height: 10px;
+    border: solid var(--white);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.checkbox-text strong {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.checkbox-text span {
+    font-size: 0.85rem;
+    color: var(--gray-400);
+    line-height: 1.4;
+}
+
+.highlight-box {
+    padding: 1.5rem;
+    border: 1px solid var(--gray-200);
+    background: var(--gray-100);
+}
+
+.agreement-box {
+    padding: 1.5rem;
+    border: 1px dashed var(--gray-400);
+}
+
+.signature-box {
+    padding: 1.5rem;
+    border: 1px solid var(--black);
+    background: var(--gray-100);
+}
+
+/* Quantities (Step 1) */
 .equipment-selection {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .item-card {
@@ -109,7 +292,6 @@ input[type="text"]:focus {
     align-items: center;
     padding: 1rem;
     border: 1px solid var(--gray-200);
-    background: var(--white);
 }
 
 .item-icon {
@@ -127,10 +309,11 @@ input[type="text"]:focus {
     flex-grow: 1;
 }
 
-.item-details h3 {
-    font-size: 1.1rem;
-    font-weight: 500;
+.item-details h4 {
+    border-bottom: none;
     margin: 0;
+    padding: 0;
+    font-size: 1.1rem;
 }
 
 .rate {
@@ -139,7 +322,6 @@ input[type="text"]:focus {
     margin-top: 0.25rem;
 }
 
-/* Quantity Control */
 .quantity-control {
     display: flex;
     align-items: center;
@@ -149,15 +331,11 @@ input[type="text"]:focus {
 .qty-btn {
     background: var(--white);
     border: none;
-    color: var(--black);
     font-size: 1.25rem;
     width: 40px;
     height: 40px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.1s;
+    transition: background 0.1s;
 }
 
 .qty-btn:hover {
@@ -177,10 +355,8 @@ input[type="text"]:focus {
     height: 40px;
     text-align: center;
     border: none;
-    font-family: inherit;
-    font-size: 1rem;
     font-weight: 600;
-    color: var(--black);
+    padding: 0;
     -moz-appearance: textfield;
 }
 
@@ -190,22 +366,129 @@ input[type="text"]:focus {
     margin: 0;
 }
 
-.qty-input:focus {
-    outline: none;
+/* Quotes and Costs */
+.quote-preview {
+    padding: 1rem;
+    background: var(--gray-100);
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--gray-200);
 }
 
+.final-quote-box {
+    border: 2px solid var(--black);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.quote-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.quote-row.total {
+    border-top: 1px solid var(--gray-200);
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.deposit-notice {
+    margin-top: 1rem;
+    background: var(--gray-100);
+    padding: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    border-left: 4px solid var(--black);
+}
+
+.deposit-notice strong {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+}
+
+/* Payment & Waiver Section */
+.payment-methods {
+    margin-bottom: 2rem;
+}
+
+.payment-grid {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+    border: 1px solid var(--gray-200);
+    padding: 1.5rem;
+}
+
+.qr-container {
+    flex: 0 0 120px;
+    max-width: 120px;
+}
+
+.qr-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid var(--gray-200);
+}
+
+.payment-text p {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.payment-text a {
+    color: var(--black);
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.waiver-section {
+    margin-bottom: 2rem;
+}
+
+.waiver-scroll {
+    height: 250px;
+    overflow-y: scroll;
+    border: 1px solid var(--gray-200);
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: var(--gray-100);
+}
+
+.waiver-scroll img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Using image as requested */
+
 /* Buttons */
+.btn-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
 .primary-btn,
 .secondary-btn {
-    width: 100%;
     padding: 1.25rem;
     font-family: inherit;
     font-size: 1rem;
     font-weight: 500;
-    letter-spacing: 0.02em;
     cursor: pointer;
     border: none;
-    transition: transform 0.1s, opacity 0.2s;
+    transition: opacity 0.2s, transform 0.1s;
+    text-align: center;
+    width: 100%;
 }
 
 .primary-btn {
@@ -231,12 +514,11 @@ input[type="text"]:focus {
     background-color: var(--gray-100);
 }
 
-/* Loader */
 .loader {
     text-align: center;
     font-size: 0.9rem;
     color: var(--gray-400);
-    margin-top: 1rem;
+    margin: 2rem 0;
     animation: pulse 1.5s infinite;
 }
 
@@ -252,74 +534,31 @@ input[type="text"]:focus {
     }
 }
 
-/* Results / Quote Panel */
-.panel {
-    margin-top: 1rem;
+.hidden {
+    display: none !important;
 }
 
-.quote-group {
-    background: var(--gray-100);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.quote-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 0;
-}
-
-.quote-row .value {
-    font-weight: 500;
-}
-
-.total-row {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--gray-200);
-}
-
-.total-row .value {
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-.discount-row .value {
-    font-size: 0.9rem;
-    color: var(--gray-900);
-}
-
-.checkout-form {
-    padding-top: 1rem;
-}
-
-/* Status Messages */
 .status-msg {
     padding: 1rem;
     margin-bottom: 1.5rem;
     font-weight: 500;
-    font-size: 0.95rem;
     text-align: center;
-}
-
-.status-success {
-    border: 1px solid var(--black);
-    color: var(--black);
+    border: 1px solid;
 }
 
 .status-error {
-    background: var(--black);
-    color: var(--white);
+    border-color: var(--error);
+    color: var(--error);
+    background: #fef2f2;
 }
 
-/* Success Layout */
+/* Success Panel */
 .success-layout {
     text-align: center;
     padding: 2rem 0;
 }
 
-.success-layout .success-icon {
+.success-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -330,11 +569,17 @@ input[type="text"]:focus {
     margin-bottom: 1.5rem;
 }
 
+.success-desc {
+    margin-bottom: 2rem;
+    color: var(--gray-400);
+}
+
 .receipt-details {
     margin: 2rem 0;
     padding: 1.5rem;
     border: 1px dashed var(--gray-400);
     text-align: left;
+    background: var(--gray-100);
 }
 
 .receipt-details p {
@@ -344,16 +589,18 @@ input[type="text"]:focus {
     color: var(--gray-900);
 }
 
-.hidden {
-    display: none !important;
-}
-
 @media (max-width: 480px) {
-    body {
-        align-items: flex-start;
-    }
-
     .container {
         padding: 1.5rem;
+        margin: 0 auto;
+    }
+
+    .btn-group {
+        flex-direction: column-reverse;
+    }
+
+    .payment-grid {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }

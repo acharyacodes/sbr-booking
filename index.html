@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rental Booking</title>
+    <title>Setups by Rajshree - Booking Request</title>
     <!-- Sharp, minimalist geometric font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
@@ -15,100 +15,276 @@
 
         <div class="header-divider">
             <h2>Rental Request</h2>
-            <p class="subtitle">Select your date and equipment quantities.</p>
+            <p class="subtitle">Setups by Rajshree – Table & Chair Rentals</p>
+
+            <!-- Progress Indicator -->
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 25%;"></div>
+            </div>
+            <div class="step-indicator" id="step-indicator">Step 1 of 4: Availability</div>
         </div>
 
         <section class="booking-section">
-            <form id="availability-form">
+            <form id="booking-form">
 
-                <div class="form-group">
-                    <label for="date-picker">Date</label>
-                    <input type="date" id="date-picker" required>
-                </div>
+                <div class="carousel-container">
+                    <div class="carousel-track" id="carousel-track">
 
-                <div class="equipment-selection">
+                        <!-- =========================
+                             STEP 1: AVAILABILITY
+                        ========================== -->
+                        <div class="carousel-step" id="step-1">
+                            <h3>1. Check Availability</h3>
+                            <p class="step-desc">Select your date and equipment quantities.</p>
 
-                    <div class="item-card">
-                        <div class="item-icon">
-                            <!-- Minimalist Chair SVG -->
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M6 10v11" />
-                                <path d="M18 10v11" />
-                                <path d="M4 10h16" />
-                                <path d="M6 10c0-6 2-7 6-7s6 1 6 7" />
-                            </svg>
+                            <div class="form-group">
+                                <label for="date-picker">Date of Event *</label>
+                                <input type="date" id="date-picker" name="date" required>
+                            </div>
+
+                            <div class="equipment-selection">
+                                <div class="item-card">
+                                    <div class="item-icon">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M6 10v11" />
+                                            <path d="M18 10v11" />
+                                            <path d="M4 10h16" />
+                                            <path d="M6 10c0-6 2-7 6-7s6 1 6 7" />
+                                        </svg>
+                                    </div>
+                                    <div class="item-details">
+                                        <h4>Chairs</h4>
+                                        <p class="rate">$1.70 / ea</p>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button type="button" class="qty-btn minus" data-target="chairs">-</button>
+                                        <input type="number" id="qty-chairs" name="qty-chairs" class="qty-input"
+                                            value="0" min="0" required>
+                                        <button type="button" class="qty-btn plus" data-target="chairs">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="item-card">
+                                    <div class="item-icon">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M4 8h16" />
+                                            <path d="M5 8v10" />
+                                            <path d="M19 8v10" />
+                                            <path d="M3 8c0-1.5 2-2 9-2s9 .5 9 2" />
+                                        </svg>
+                                    </div>
+                                    <div class="item-details">
+                                        <h4>Tables</h4>
+                                        <p class="rate">$8.00 / ea</p>
+                                    </div>
+                                    <div class="quantity-control">
+                                        <button type="button" class="qty-btn minus" data-target="tables">-</button>
+                                        <input type="number" id="qty-tables" name="qty-tables" class="qty-input"
+                                            value="0" min="0" required>
+                                        <button type="button" class="qty-btn plus" data-target="tables">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="quote-preview hidden" id="step1-quote">
+                                Estimated Rental Total: <strong id="step1-total">$0.00</strong>
+                            </div>
+
+                            <div id="availability-status" class="status-msg hidden"></div>
+
+                            <button type="button" id="btn-check" class="primary-btn">Check Availability</button>
                         </div>
-                        <div class="item-details">
-                            <h3>Chairs</h3>
-                            <p class="rate">$1.70 / ea</p>
+
+                        <!-- =========================
+                             STEP 2: EVENT DETAILS
+                        ========================== -->
+                        <div class="carousel-step" id="step-2">
+                            <h3>2. Event Details</h3>
+                            <p class="step-desc">Please provide your contact and location information.</p>
+
+                            <div class="form-group">
+                                <label for="customer-name">First and Last Name *</label>
+                                <input type="text" id="customer-name" name="name" placeholder="John Doe" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="customer-phone">Phone Number *</label>
+                                <input type="tel" id="customer-phone" name="phone" placeholder="(555) 555-5555"
+                                    required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="event-time">Time of Event *</label>
+                                <input type="time" id="event-time" name="time" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Address Type *</label>
+                                <p class="help-text">We do not rent to park locations.</p>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="address-type" value="Home" required>
+                                        <span class="custom-radio"></span> Home
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="address-type" value="Business">
+                                        <span class="custom-radio"></span> Business
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="address-type" value="Apartment">
+                                        <span class="custom-radio"></span> Apartment
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dropoff-address">Drop off Address *</label>
+                                <input type="text" id="dropoff-address" name="address"
+                                    placeholder="123 Main St, City, State ZIP" required>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="secondary-btn btn-prev">Back</button>
+                                <button type="button" id="btn-next-2" class="primary-btn btn-next">Continue</button>
+                            </div>
                         </div>
-                        <div class="quantity-control">
-                            <button type="button" class="qty-btn minus" data-target="chairs">-</button>
-                            <input type="number" id="qty-chairs" class="qty-input" value="0" min="0" required>
-                            <button type="button" class="qty-btn plus" data-target="chairs">+</button>
+
+                        <!-- =========================
+                             STEP 3: ADD-ONS & LOGISTICS
+                        ========================== -->
+                        <div class="carousel-step" id="step-3">
+                            <h3>3. Add-ons & Logistics</h3>
+                            <p class="step-desc">Configure your delivery setup and read the policies.</p>
+
+                            <div class="form-group highlight-box">
+                                <label>Setup / Tear Down Service *</label>
+                                <div class="radio-group vertical">
+                                    <label class="radio-label">
+                                        <input type="radio" name="setup-option" value="15-setup" data-cost="15"
+                                            required>
+                                        <span class="custom-radio"></span> Yes, setup tables & chairs (+$15)
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="setup-option" value="15-teardown" data-cost="15">
+                                        <span class="custom-radio"></span> Yes, tear down tables & chairs (+$15)
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="setup-option" value="30-both" data-cost="30">
+                                        <span class="custom-radio"></span> Yes, setup AND tear down (+$30)
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="setup-option" value="0-none" data-cost="0">
+                                        <span class="custom-radio"></span> No, I will setup/tear down myself
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group agreement-box">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="agree-trash" required>
+                                    <span class="custom-checkbox"></span>
+                                    <div class="checkbox-text">
+                                        <strong>I understand tables must be clear of trash and belongings.</strong>
+                                        <span>Trash removal is not included. A $50 charge applies if items require deep
+                                            cleaning from stains or residue at pickup.</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="form-group agreement-box">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="agree-folding" required>
+                                    <span class="custom-checkbox"></span>
+                                    <div class="checkbox-text">
+                                        <strong>I understand folding requirements.</strong>
+                                        <span>If I did not elect for setup/tear down, tables and chairs must be folded
+                                            up and ready for pickup, or the setup/tear down fee will be charged.</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="secondary-btn btn-prev">Back</button>
+                                <button type="button" id="btn-next-3" class="primary-btn btn-next">Review Quote</button>
+                            </div>
+                        </div>
+
+                        <!-- =========================
+                             STEP 4: FINAL PAYMENT
+                        ========================== -->
+                        <div class="carousel-step" id="step-4">
+                            <h3>4. Payment & Signature</h3>
+
+                            <div class="final-quote-box">
+                                <div class="quote-row">
+                                    <span>Base Rental:</span>
+                                    <span id="final-base">$0.00</span>
+                                </div>
+                                <div class="quote-row">
+                                    <span>Service Fees:</span>
+                                    <span id="final-fees">$0.00</span>
+                                </div>
+                                <div class="quote-row total">
+                                    <span>Total Due:</span>
+                                    <span id="final-total">$0.00</span>
+                                </div>
+                                <div class="deposit-notice">
+                                    A 50% non-refundable deposit is required to confirm your date.
+                                    <br><strong>Deposit Due Now: <span id="final-deposit">$0.00</span></strong>
+                                </div>
+                            </div>
+
+                            <div class="payment-methods">
+                                <h4>Payment Options</h4>
+                                <div class="payment-grid">
+                                    <div class="qr-container">
+                                        <img src="qrcode.png" alt="Payment QR Code">
+                                    </div>
+                                    <div class="payment-text">
+                                        <p><strong>Zelle:</strong> (405)-541-3578</p>
+                                        <p><strong>Venmo:</strong> <br><a href="https://venmo.com/u/SetupsByRajshree"
+                                                target="_blank">@SetupsByRajshree</a></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="waiver-section">
+                                <h4>Liability Form / Waiver</h4>
+                                <div class="waiver-scroll">
+                                    <img src="waiver.jpg" alt="Liability Waiver Document">
+                                </div>
+                                <div class="form-group agreement-box">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="agree-waiver" required>
+                                        <span class="custom-checkbox"></span>
+                                        <div class="checkbox-text">
+                                            I have read the attached rental agreement and agree to abide by all the
+                                            terms and conditions.
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group signature-box">
+                                <label for="e-signature">Electronic Signature *</label>
+                                <p class="help-text">Type your First and Last Name to sign.</p>
+                                <input type="text" id="e-signature" name="signature" placeholder="Signature" required>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="secondary-btn btn-prev">Back</button>
+                                <button type="submit" id="btn-submit" class="primary-btn">Confirm Booking</button>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="item-card">
-                        <div class="item-icon">
-                            <!-- Minimalist Table SVG -->
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M4 8h16" />
-                                <path d="M5 8v10" />
-                                <path d="M19 8v10" />
-                                <path d="M3 8c0-1.5 2-2 9-2s9 .5 9 2" />
-                            </svg>
-                        </div>
-                        <div class="item-details">
-                            <h3>Tables</h3>
-                            <p class="rate">$8.00 / ea</p>
-                        </div>
-                        <div class="quantity-control">
-                            <button type="button" class="qty-btn minus" data-target="tables">-</button>
-                            <input type="number" id="qty-tables" class="qty-input" value="0" min="0" required>
-                            <button type="button" class="qty-btn plus" data-target="tables">+</button>
-                        </div>
-                    </div>
-
                 </div>
-
-                <div class="divider"></div>
-
-                <button type="submit" id="check-btn" class="primary-btn">Check Availability</button>
-                <div id="loading" class="hidden loader">Processing request...</div>
             </form>
 
-            <div id="results-panel" class="hidden panel">
-                <div id="availability-status"></div>
-
-                <div id="quote-details" class="hidden">
-
-                    <div class="quote-group">
-                        <div class="quote-row">
-                            <span class="label">Total Items</span>
-                            <span id="quote-items" class="value">0</span>
-                        </div>
-                        <div class="quote-row discount-row hidden" id="discount-row">
-                            <span class="label">Package Applied</span>
-                            <span id="quote-discount" class="value">None</span>
-                        </div>
-                        <div class="quote-row total-row">
-                            <span class="label">Estimated Total</span>
-                            <span id="quote-total" class="value">$0.00</span>
-                        </div>
-                    </div>
-
-                    <div class="checkout-form">
-                        <div class="form-group">
-                            <label for="customer-name">Full Name</label>
-                            <input type="text" id="customer-name" placeholder="Enter your name" required>
-                        </div>
-                        <button type="button" id="book-btn" class="primary-btn checkout">Confirm Booking</button>
-                    </div>
-                </div>
-            </div>
+            <div id="loading" class="hidden loader">Processing your request natively...</div>
 
             <div id="success-panel" class="hidden panel success-layout">
                 <div class="success-icon">
@@ -118,11 +294,13 @@
                     </svg>
                 </div>
                 <h2>Booking Confirmed</h2>
+                <p class="success-desc">Thank you! Your event details have been recorded.</p>
                 <div class="receipt-details">
                     <p>ID: <strong id="success-id"></strong></p>
                     <p>Date: <strong id="success-date"></strong></p>
+                    <p>Deposit Due: <strong id="success-deposit"></strong></p>
                 </div>
-                <button type="button" id="reset-btn" class="secondary-btn">New Request</button>
+                <button type="button" id="reset-btn" class="secondary-btn">Book Another Event</button>
             </div>
         </section>
     </main>
