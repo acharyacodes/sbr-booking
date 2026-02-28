@@ -22,18 +22,26 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     // Navigation Buttons
-    const btnCheck = document.getElementById('btn-check'); // Step 1
-    const btnNext2 = document.getElementById('btn-next-2'); // Step 2
-    const btnNext3 = document.getElementById('btn-next-3'); // Step 3
+    const btnCheck = document.getElementById('btn-check'); // Step 1 Checks DB
+    const btnNext1 = document.getElementById('btn-next-1'); // Step 1 -> 2
+    const btnNext2 = document.getElementById('btn-next-2'); // Step 2 -> 3
+    const btnNext3 = document.getElementById('btn-next-3'); // Step 3 -> 4
     const btnSubmit = document.getElementById('btn-submit'); // Step 4
     const btnPrevs = document.querySelectorAll('.btn-prev');
     const btnReset = document.getElementById('reset-btn');
 
-    // UI Elements
     const form = document.getElementById('booking-form');
     const loading = document.getElementById('loading');
     const availabilityStatus = document.getElementById('availability-status');
     const successPanel = document.getElementById('success-panel');
+
+    // Modal Elements
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.querySelector('.modal-image');
+    const btnOpenModal1 = document.getElementById('open-waiver-modal');
+    const btnOpenModal2 = document.getElementById('open-waiver-btn');
+    const btnOpenQR = document.getElementById('open-qr-modal');
+    const btnCloseModal = document.getElementById('close-modal');
 
     // Helper: Update Carousel Position
     function updateCarousel() {
@@ -51,6 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 step.classList.remove('active');
             }
+        });
+
+        // Always scroll to top of form when changing steps
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
         });
     }
 
@@ -143,11 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('step1-total').textContent = `$${cachedQuoteTotal.toFixed(2)}`;
                 document.getElementById('step1-quote').classList.remove('hidden');
 
-                // Allow user a moment to see the success before sliding
-                setTimeout(() => {
-                    currentStep = 2;
-                    updateCarousel();
-                }, 800);
+                // Swap buttons to let user manually continue
+                btnCheck.classList.add('hidden');
+                btnNext1.classList.remove('hidden');
             } else {
                 let errorMsg = 'Selected items are not available on this date.';
                 if (result.message) {
@@ -165,6 +177,12 @@ document.addEventListener('DOMContentLoaded', () => {
             btnCheck.textContent = 'Check Availability';
             loading.classList.add('hidden');
         }
+    });
+
+    // --- STEP 1 -> STEP 2 (Manual Continue) ---
+    btnNext1.addEventListener('click', () => {
+        currentStep = 2;
+        updateCarousel();
     });
 
     // --- STEP 2: Event Details -> Step 3 ---
@@ -294,10 +312,36 @@ document.addEventListener('DOMContentLoaded', () => {
         form.reset();
         cachedQuoteTotal = 0;
         document.getElementById('step1-quote').classList.add('hidden');
+        btnCheck.classList.remove('hidden');
+        btnNext1.classList.add('hidden');
         successPanel.classList.add('hidden');
         form.classList.remove('hidden');
         currentStep = 1;
         updateCarousel();
+    });
+
+    // --- Image Modal Logic ---
+    function openModal(imgSrc) {
+        modalImg.src = imgSrc;
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    function closeModal() {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    btnOpenModal1.addEventListener('click', () => openModal('waiver.png'));
+    btnOpenModal2.addEventListener('click', () => openModal('waiver.png'));
+    if (btnOpenQR) btnOpenQR.addEventListener('click', () => openModal('qrcode.jpg'));
+    btnCloseModal.addEventListener('click', closeModal);
+
+    // Close modal if clicking outside the image
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
     });
 
     // Initial setup

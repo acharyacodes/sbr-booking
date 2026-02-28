@@ -39,7 +39,9 @@
 
                             <div class="form-group">
                                 <label for="date-picker">Date of Event *</label>
-                                <input type="date" id="date-picker" name="date" required>
+                                <input type="text" id="date-picker" name="date"
+                                    placeholder="Select Date (e.g., MM/DD/YYYY)" onfocus="(this.type='date')"
+                                    onblur="if(this.value==='') this.type='text'" required>
                             </div>
 
                             <div class="equipment-selection">
@@ -97,6 +99,8 @@
                             <div id="availability-status" class="status-msg hidden"></div>
 
                             <button type="button" id="btn-check" class="primary-btn">Check Availability</button>
+                            <button type="button" id="btn-next-1" class="primary-btn hidden">Continue to
+                                Details</button>
                         </div>
 
                         <!-- =========================
@@ -119,7 +123,8 @@
 
                             <div class="form-group">
                                 <label for="event-time">Time of Event *</label>
-                                <input type="time" id="event-time" name="time" required>
+                                <input type="text" id="event-time" name="time" placeholder="Select Time (e.g., 2:00 PM)"
+                                    onfocus="(this.type='time')" onblur="if(this.value==='') this.type='text'" required>
                             </div>
 
                             <div class="form-group">
@@ -241,8 +246,12 @@
                             <div class="payment-methods">
                                 <h4>Payment Options</h4>
                                 <div class="payment-grid">
-                                    <div class="qr-container">
-                                        <img src="qrcode.png" alt="Payment QR Code">
+                                    <div class="qr-container" id="open-qr-modal" style="cursor: pointer;"
+                                        title="Tap to view QR full size">
+                                        <img src="qrcode.jpg" alt="Payment QR Code">
+                                        <div
+                                            style="font-size: 0.75rem; text-align: center; color: var(--gray-400); margin-top: 5px;">
+                                            Tap QR to enlarge</div>
                                     </div>
                                     <div class="payment-text">
                                         <p><strong>Zelle:</strong> (405)-541-3578</p>
@@ -254,9 +263,16 @@
 
                             <div class="waiver-section">
                                 <h4>Liability Form / Waiver</h4>
-                                <div class="waiver-scroll">
-                                    <img src="waiver.jpg" alt="Liability Waiver Document">
+                                <div class="waiver-scroll" id="open-waiver-modal" style="cursor: pointer;"
+                                    title="Click to view full size">
+                                    <img src="waiver.png" alt="Liability Waiver Document">
                                 </div>
+                                <p class="help-text" style="text-align: center; margin-bottom: 1rem;">
+                                    <button type="button" id="open-waiver-btn"
+                                        style="background:none; border:none; color: var(--black); text-decoration: underline; font-weight: 500; cursor: pointer; font-size: 16px;">
+                                        Tap here to open Waiver in full screen
+                                    </button>
+                                </p>
                                 <div class="form-group agreement-box">
                                     <label class="checkbox-label">
                                         <input type="checkbox" name="agree-waiver" required>
@@ -303,6 +319,13 @@
                 <button type="button" id="reset-btn" class="secondary-btn">Book Another Event</button>
             </div>
         </section>
+        <!-- Modal for Image Viewing -->
+        <div id="image-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <button type="button" class="modal-close" id="close-modal">&times;</button>
+                <img src="waiver.png" alt="Full Size Liability Waiver" class="modal-image">
+            </div>
+        </div>
     </main>
 
     <script src="script.js"></script>

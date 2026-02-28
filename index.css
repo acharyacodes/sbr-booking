@@ -15,6 +15,7 @@
 }
 
 body {
+    font-size: 16px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--white);
     color: var(--black);
@@ -22,7 +23,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    /* better for long scrolling forms on mobile */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -166,6 +166,7 @@ input[type="time"] {
     outline: none;
     transition: border-color 0.2s;
     width: 100%;
+    max-width: 100%;
 }
 
 input:focus {
@@ -589,18 +590,161 @@ input:invalid:not(:placeholder-shown) {
     color: var(--gray-900);
 }
 
-@media (max-width: 480px) {
+/* Image Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    position: relative;
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-image {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+    border: 2px solid var(--white);
+}
+
+.modal-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+@media (max-width: 600px) {
+    body {
+        align-items: flex-start;
+    }
+
     .container {
-        padding: 1.5rem;
-        margin: 0 auto;
+        padding: 1.25rem 1rem 5rem 1rem;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+        min-height: 100vh;
+    }
+
+    h2 {
+        font-size: 1.35rem;
+    }
+
+    h3 {
+        font-size: 1.2rem;
+    }
+
+    h4 {
+        font-size: 1.05rem;
+    }
+
+    .subtitle {
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .step-desc {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .help-text {
+        font-size: 0.85rem;
+    }
+
+    label:not(.radio-label):not(.checkbox-label) {
+        font-size: 0.9rem;
+        /* Bumped up from 0.85rem */
+    }
+
+    .header-divider {
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Enhance Touch Targets & Prevent iOS Zoom */
+    input[type="date"],
+    input[type="text"],
+    input[type="tel"],
+    input[type="time"],
+    .radio-label,
+    .checkbox-label {
+        font-size: 16px;
     }
 
     .btn-group {
         flex-direction: column-reverse;
+        gap: 0.5rem;
     }
 
     .payment-grid {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
+        text-align: center;
+    }
+
+    /* Reorganize Item Cards for tiny screens */
+    .item-card {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .item-icon {
+        margin-right: 0.5rem;
+        width: 40px;
+        height: 40px;
+    }
+
+    .item-details {
+        flex-grow: 1;
+        min-width: 50%;
+    }
+
+    .quantity-control {
+        width: 100%;
+        margin-top: 0.5rem;
+        justify-content: space-between;
+    }
+
+    .qty-btn {
+        width: 45px;
+        height: 45px;
+    }
+
+    .qty-input {
+        flex-grow: 1;
+        height: 45px;
+    }
+
+    /* Compress Boxes */
+    .highlight-box,
+    .agreement-box,
+    .signature-box,
+    .final-quote-box {
+        padding: 1rem;
+    }
+
+    .waiver-scroll {
+        height: 180px;
     }
 }
