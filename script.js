@@ -77,9 +77,24 @@ document.addEventListener('DOMContentLoaded', () => {
         let isValid = true;
 
         inputs.forEach(input => {
+            // Trim whitespace for standard inputs
+            if (input.type === 'text' || input.type === 'tel') {
+                input.value = input.value.trim();
+            }
+
             if (!input.checkValidity()) {
+                if (input.validity.patternMismatch) {
+                    input.setCustomValidity(input.title); // Use our custom regex mismatch title
+                } else if (input.validity.valueMissing) {
+                    input.setCustomValidity('This field is required.');
+                } else {
+                    input.setCustomValidity(''); // Reset to default
+                }
+
                 input.reportValidity();
                 isValid = false;
+            } else {
+                input.setCustomValidity('');
             }
         });
 
@@ -365,6 +380,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // --- Form field formatting & sanitization ---
+    const phoneInput = document.getElementById('customer-phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function (e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+            e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+        });
+    }
 
     // Reset Flow
     btnReset.addEventListener('click', () => {

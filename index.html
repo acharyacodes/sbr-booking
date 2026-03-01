@@ -166,13 +166,18 @@
 
                             <div class="form-group">
                                 <label for="customer-name">First and Last Name *</label>
-                                <input type="text" id="customer-name" name="name" placeholder="John Doe" required>
+                                <input type="text" id="customer-name" name="name" placeholder="John Doe"
+                                    pattern="^[A-Za-z\s\-']+$"
+                                    title="Please enter a valid name (letters, spaces, hyphens, and apostrophes only)."
+                                    minlength="2" maxlength="50" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="customer-phone">Phone Number *</label>
                                 <input type="tel" id="customer-phone" name="phone" placeholder="(555) 555-5555"
-                                    required>
+                                    pattern="^\(\d{3}\) \d{3}-\d{4}$"
+                                    title="Please enter a valid phone number in the format (XXX) XXX-XXXX."
+                                    maxlength="14" required>
                             </div>
 
                             <div id="address-container">
@@ -199,7 +204,10 @@
                                 <div class="form-group">
                                     <label for="dropoff-address">Delivery Address *</label>
                                     <input type="text" id="dropoff-address" name="address"
-                                        placeholder="123 Business Address St, City, State ZIP" required>
+                                        placeholder="123 Business Address St, City, State ZIP"
+                                        pattern="^[A-Za-z0-9\s,.\-#]+$"
+                                        title="Please enter a valid address containing alphanumeric characters, spaces, and standard punctuation (, . - #)."
+                                        minlength="5" maxlength="150" required>
                                 </div>
                             </div>
 
@@ -361,7 +369,10 @@
                             <div class="form-group signature-box">
                                 <label for="e-signature">Electronic Signature *</label>
                                 <p class="help-text">Type your First and Last Name to sign.</p>
-                                <input type="text" id="e-signature" name="signature" placeholder="Signature" required>
+                                <input type="text" id="e-signature" name="signature" placeholder="Signature"
+                                    pattern="^[A-Za-z\s\-']+$"
+                                    title="Please enter a valid name matching your First and Last Name." minlength="2"
+                                    maxlength="50" required>
                             </div>
 
                             <div class="btn-group">
