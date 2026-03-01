@@ -21,7 +21,7 @@
             <div class="progress-bar">
                 <div class="progress-fill" id="progress-fill" style="width: 25%;"></div>
             </div>
-            <div class="step-indicator" id="step-indicator">Step 1 of 4: Availability</div>
+            <div class="step-indicator" id="step-indicator">Step 1 of 5: Service Type</div>
         </div>
 
         <section class="booking-section">
@@ -31,17 +31,65 @@
                     <div class="carousel-track" id="carousel-track">
 
                         <!-- =========================
-                             STEP 1: AVAILABILITY
+                             STEP 1: SERVICE TYPE
                         ========================== -->
                         <div class="carousel-step" id="step-1">
-                            <h3>1. Check Availability</h3>
-                            <p class="step-desc">Select your date and equipment quantities.</p>
+                            <h3>1. Service Type</h3>
+                            <p class="step-desc">How would you like to handle the equipment?</p>
 
-                            <div class="form-group">
-                                <label for="date-picker">Date of Event *</label>
-                                <input type="text" id="date-picker" name="date"
-                                    placeholder="Select Date (e.g., MM/DD/YYYY)" onfocus="(this.type='date')"
-                                    onblur="if(this.value==='') this.type='text'" required>
+                            <div class="form-group highlight-box">
+                                <label>Delivery or Pick-up? *</label>
+                                <div class="radio-group vertical">
+                                    <label class="radio-label">
+                                        <input type="radio" name="service-type" value="delivery" required>
+                                        <span class="custom-radio"></span> Please deliver and pick up the equipment
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="service-type" value="pickup">
+                                        <span class="custom-radio"></span> I will pick up and return the equipment
+                                        myself
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="button" id="btn-next-service" class="primary-btn btn-next">Continue</button>
+                        </div>
+
+                        <!-- =========================
+                             STEP 2: AVAILABILITY
+                        ========================== -->
+                        <div class="carousel-step" id="step-2">
+                            <h3>2. Check Availability</h3>
+                            <p class="step-desc">Select your dates, times, and equipment.</p>
+
+                            <div class="form-row" style="display: flex; gap: 1rem;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="pickup-date">Pick-up Date *</label>
+                                    <input type="text" id="pickup-date" name="pickup-date" placeholder="Pick-up Date"
+                                        onfocus="(this.type='date')" onblur="if(this.value==='') this.type='text'"
+                                        required>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="pickup-time">Pick-up Time *</label>
+                                    <input type="text" id="pickup-time" name="pickup-time" placeholder="Pick-up Time"
+                                        onfocus="(this.type='time')" onblur="if(this.value==='') this.type='text'"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="form-row" style="display: flex; gap: 1rem;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="dropoff-date">Return Date *</label>
+                                    <input type="text" id="dropoff-date" name="dropoff-date" placeholder="Return Date"
+                                        onfocus="(this.type='date')" onblur="if(this.value==='') this.type='text'"
+                                        required>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="dropoff-time">Return Time *</label>
+                                    <input type="text" id="dropoff-time" name="dropoff-time" placeholder="Return Time"
+                                        onfocus="(this.type='time')" onblur="if(this.value==='') this.type='text'"
+                                        required>
+                                </div>
                             </div>
 
                             <div class="equipment-selection">
@@ -92,23 +140,29 @@
                                 </div>
                             </div>
 
-                            <div class="quote-preview hidden" id="step1-quote">
-                                Estimated Rental Total: <strong id="step1-total">$0.00</strong>
+                            <div class="quote-preview hidden" id="step2-quote">
+                                Estimated Rental Total: <strong id="step2-total">$0.00</strong>
                             </div>
 
                             <div id="availability-status" class="status-msg hidden"></div>
 
-                            <button type="button" id="btn-check" class="primary-btn">Check Availability</button>
-                            <button type="button" id="btn-next-1" class="primary-btn hidden">Continue to
-                                Details</button>
+                            <div class="btn-group">
+                                <button type="button" class="secondary-btn btn-prev">Back</button>
+                                <button type="button" id="btn-check" class="primary-btn">Check Availability</button>
+                            </div>
+                            <div class="btn-group hidden" id="btn-next-avail-group">
+                                <button type="button" class="secondary-btn btn-prev">Back</button>
+                                <button type="button" id="btn-next-avail" class="primary-btn">Continue to
+                                    Details</button>
+                            </div>
                         </div>
 
                         <!-- =========================
-                             STEP 2: EVENT DETAILS
+                             STEP 3: EVENT DETAILS
                         ========================== -->
-                        <div class="carousel-step" id="step-2">
-                            <h3>2. Event Details</h3>
-                            <p class="step-desc">Please provide your contact and location information.</p>
+                        <div class="carousel-step" id="step-3">
+                            <h3>3. Contact & Details</h3>
+                            <p class="step-desc">Please provide your contact information.</p>
 
                             <div class="form-group">
                                 <label for="customer-name">First and Last Name *</label>
@@ -121,51 +175,58 @@
                                     required>
                             </div>
 
-                            <div class="form-group">
-                                <label for="event-time">Time of Event *</label>
-                                <input type="text" id="event-time" name="time" placeholder="Select Time (e.g., 2:00 PM)"
-                                    onfocus="(this.type='time')" onblur="if(this.value==='') this.type='text'" required>
-                            </div>
+                            <div id="address-container">
+                                <div class="form-group">
+                                    <label>Address Type *</label>
+                                    <p class="help-text">We do not rent to park locations.</p>
+                                    <div class="radio-group">
+                                        <label class="radio-label">
+                                            <input type="radio" name="address-type" value="Home" id="addr-home"
+                                                required>
+                                            <span class="custom-radio"></span> Home
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="address-type" value="Business" id="addr-biz">
+                                            <span class="custom-radio"></span> Business
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="address-type" value="Apartment" id="addr-apt">
+                                            <span class="custom-radio"></span> Apartment
+                                        </label>
+                                    </div>
+                                </div>
 
-                            <div class="form-group">
-                                <label>Address Type *</label>
-                                <p class="help-text">We do not rent to park locations.</p>
-                                <div class="radio-group">
-                                    <label class="radio-label">
-                                        <input type="radio" name="address-type" value="Home" required>
-                                        <span class="custom-radio"></span> Home
-                                    </label>
-                                    <label class="radio-label">
-                                        <input type="radio" name="address-type" value="Business">
-                                        <span class="custom-radio"></span> Business
-                                    </label>
-                                    <label class="radio-label">
-                                        <input type="radio" name="address-type" value="Apartment">
-                                        <span class="custom-radio"></span> Apartment
-                                    </label>
+                                <div class="form-group">
+                                    <label for="dropoff-address">Delivery Address *</label>
+                                    <input type="text" id="dropoff-address" name="address"
+                                        placeholder="123 Business Address St, City, State ZIP" required>
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="dropoff-address">Drop off Address *</label>
-                                <input type="text" id="dropoff-address" name="address"
-                                    placeholder="123 Main St, City, State ZIP" required>
+                            <div id="pickup-notice" class="hidden">
+                                <div class="highlight-box form-group"
+                                    style="text-align: center; margin-bottom: 1.5rem;">
+                                    <strong>Self Pick-up Selected</strong>
+                                    <p style="margin-top: 5px;">Our pick-up address will be provided to you before
+                                        confirmation of your booking.</p>
+                                </div>
                             </div>
 
                             <div class="btn-group">
                                 <button type="button" class="secondary-btn btn-prev">Back</button>
-                                <button type="button" id="btn-next-2" class="primary-btn btn-next">Continue</button>
+                                <button type="button" id="btn-next-details"
+                                    class="primary-btn btn-next">Continue</button>
                             </div>
                         </div>
 
                         <!-- =========================
-                             STEP 3: ADD-ONS & LOGISTICS
+                             STEP 4: ADD-ONS & LOGISTICS
                         ========================== -->
-                        <div class="carousel-step" id="step-3">
-                            <h3>3. Add-ons & Logistics</h3>
+                        <div class="carousel-step" id="step-4">
+                            <h3>4. Add-ons & Logistics</h3>
                             <p class="step-desc">Configure your delivery setup and read the policies.</p>
 
-                            <div class="form-group highlight-box">
+                            <div class="form-group highlight-box" id="setup-opts-container">
                                 <label>Setup / Tear Down Service *</label>
                                 <div class="radio-group vertical">
                                     <label class="radio-label">
@@ -206,23 +267,25 @@
                                     <span class="custom-checkbox"></span>
                                     <div class="checkbox-text">
                                         <strong>I understand folding requirements.</strong>
-                                        <span>If I did not elect for setup/tear down, tables and chairs must be folded
-                                            up and ready for pickup, or the setup/tear down fee will be charged.</span>
+                                        <span>If I did not elect for setup/tear down or am self-returning, tables and
+                                            chairs must be folded
+                                            up and ready, or a fee will be charged.</span>
                                     </div>
                                 </label>
                             </div>
 
                             <div class="btn-group">
                                 <button type="button" class="secondary-btn btn-prev">Back</button>
-                                <button type="button" id="btn-next-3" class="primary-btn btn-next">Review Quote</button>
+                                <button type="button" id="btn-next-addons" class="primary-btn btn-next">Review
+                                    Quote</button>
                             </div>
                         </div>
 
                         <!-- =========================
-                             STEP 4: FINAL PAYMENT
+                             STEP 5: FINAL PAYMENT
                         ========================== -->
-                        <div class="carousel-step" id="step-4">
-                            <h3>4. Payment & Signature</h3>
+                        <div class="carousel-step" id="step-5">
+                            <h3>5. Payment & Signature</h3>
 
                             <div class="final-quote-box">
                                 <div class="quote-row">
@@ -241,6 +304,16 @@
                                     A 50% non-refundable deposit is required to confirm your date.
                                     <br><strong>Deposit Due Now: <span id="final-deposit">$0.00</span></strong>
                                 </div>
+                            </div>
+
+                            <div id="step5-pickup-notice" class="hidden highlight-box"
+                                style="margin-bottom: 1.5rem; text-align: center;">
+                                <strong>Self Pick-up Details</strong>
+                                <p style="margin-top: 5px; margin-bottom: 5px;">Pick up your equipment at:
+                                    <br><strong>6433 St George Ct, North Richland Hills, TX 76180</strong>
+                                </p>
+                                <p style="margin: 0; font-size: 0.9em; color: var(--gray-800);">Scheduled Time: <strong
+                                        id="step5-pickup-time"></strong></p>
                             </div>
 
                             <div class="payment-methods">
@@ -316,7 +389,18 @@
                     <p>Date: <strong id="success-date"></strong></p>
                     <p>Deposit Due: <strong id="success-deposit"></strong></p>
                 </div>
-                <button type="button" id="reset-btn" class="secondary-btn">Book Another Event</button>
+
+                <div id="success-address-container" class="hidden highlight-box"
+                    style="margin-top: 1.5rem; text-align: left;">
+                    <h4 style="margin-top: 0; margin-bottom: 0.5rem; color: var(--black);">Pick-up Instructions</h4>
+                    <p style="margin: 0; font-size: 0.95rem; color: var(--gray-800);">Pick up your equipment
+                        at:<br><strong>123 Business Address St,<br>City, State ZIP</strong></p>
+                    <p style="margin-top: 0.5rem; margin-bottom: 0; font-size: 0.85rem; color: var(--gray-500);">Please
+                        arrive at your scheduled pick-up time: <strong id="success-pickup-time"></strong>.</p>
+                </div>
+
+                <button type="button" id="reset-btn" class="secondary-btn" style="margin-top: 1.5rem;">Book Another
+                    Event</button>
             </div>
         </section>
         <!-- Modal for Image Viewing -->

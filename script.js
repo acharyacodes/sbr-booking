@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Multi-step State
     let currentStep = 1;
-    const totalSteps = 4;
+    const totalSteps = 5;
     const track = document.getElementById('carousel-track');
     const progressFill = document.getElementById('progress-fill');
     const stepIndicator = document.getElementById('step-indicator');
@@ -13,20 +13,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let cachedQuoteTotal = 0;
 
     // Step Elements
-    const stepLabels = ['Availability', 'Event Details', 'Add-ons', 'Summary'];
+    const stepLabels = ['Service Type', 'Availability', 'Event Details', 'Add-ons', 'Summary'];
     const steps = [
         document.getElementById('step-1'),
         document.getElementById('step-2'),
         document.getElementById('step-3'),
-        document.getElementById('step-4')
+        document.getElementById('step-4'),
+        document.getElementById('step-5')
     ];
 
     // Navigation Buttons
-    const btnCheck = document.getElementById('btn-check'); // Step 1 Checks DB
-    const btnNext1 = document.getElementById('btn-next-1'); // Step 1 -> 2
-    const btnNext2 = document.getElementById('btn-next-2'); // Step 2 -> 3
-    const btnNext3 = document.getElementById('btn-next-3'); // Step 3 -> 4
-    const btnSubmit = document.getElementById('btn-submit'); // Step 4
+    const btnCheck = document.getElementById('btn-check');
+    const btnNextService = document.getElementById('btn-next-service');
+    const btnNextAvail = document.getElementById('btn-next-avail');
+    const btnNextDetails = document.getElementById('btn-next-details');
+    const btnNextAddons = document.getElementById('btn-next-addons');
+    const btnSubmit = document.getElementById('btn-submit');
     const btnPrevs = document.querySelectorAll('.btn-prev');
     const btnReset = document.getElementById('reset-btn');
 
@@ -81,8 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Custom validation for quantities on step 1
-        if (stepNum === 1 && isValid) {
+        // Custom validation for quantities on step 2
+        if (stepNum === 2 && isValid) {
             const tables = parseInt(document.getElementById('qty-tables').value) || 0;
             const chairs = parseInt(document.getElementById('qty-chairs').value) || 0;
             if (tables === 0 && chairs === 0) {
@@ -91,8 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Custom validation for Radio buttons on step 2 & 3
-        if (isValid && (stepNum === 2 || stepNum === 3)) {
+        // Custom validation for Radio buttons on step 1, 3 & 4
+        if (isValid && (stepNum === 1 || stepNum === 3 || stepNum === 4)) {
             const radioGroups = currentStepEl.querySelectorAll('.radio-group');
             radioGroups.forEach(group => {
                 const radios = group.querySelectorAll('input[type="radio"]:required');
@@ -124,12 +126,52 @@ document.addEventListener('DOMContentLoaded', () => {
         availabilityStatus.classList.add('hidden');
     }
 
-    // --- STEP 1: Check Availability ---
-    btnCheck.addEventListener('click', async () => {
-        hideStatus();
+    // --- STEP 1: Service Type -> Step 2 ---
+    btnNextService.addEventListener('click', () => {
         if (!validateStep(1)) return;
 
-        const date = document.getElementById('date-picker').value;
+        const serviceType = document.querySelector('input[name="service-type"]:checked').value;
+        const addressContainer = document.getElementById('address-container');
+        const pickupNotice = document.getElementById('pickup-notice');
+        const addrRadios = document.querySelectorAll('input[name="address-type"]');
+        const addrInput = document.getElementById('dropoff-address');
+        const setupContainer = document.getElementById('setup-opts-container');
+        const setupRadios = document.querySelectorAll('input[name="setup-option"]');
+
+        if (serviceType === 'pickup') {
+            addressContainer.classList.add('hidden');
+            pickupNotice.classList.remove('hidden');
+            addrRadios.forEach(r => r.required = false);
+            addrInput.required = false;
+
+            setupContainer.classList.add('hidden');
+            setupRadios.forEach(r => {
+                r.required = false;
+                if (r.value === '0-none') r.checked = true;
+            });
+        } else {
+            addressContainer.classList.remove('hidden');
+            pickupNotice.classList.add('hidden');
+            addrRadios.forEach(r => r.required = true);
+            addrInput.required = true;
+
+            setupContainer.classList.remove('hidden');
+            setupRadios.forEach(r => r.required = true);
+        }
+
+        currentStep = 2;
+        updateCarousel();
+    });
+
+    // --- STEP 2: Check Availability ---
+    btnCheck.addEventListener('click', async () => {
+        hideStatus();
+        if (!validateStep(2)) return;
+
+        const pDate = document.getElementById('pickup-date').value;
+        const pTime = document.getElementById('pickup-time').value;
+        const dDate = document.getElementById('dropoff-date').value;
+        const dTime = document.getElementById('dropoff-time').value;
         const tables = document.getElementById('qty-tables').value;
         const chairs = document.getElementById('qty-chairs').value;
 
@@ -143,8 +185,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({
                     action: 'check_availability',
-                    date: date,
-                    tables: tables, // ensure numbers
+                    startDate: pDate,
+                    startTime: pTime,
+                    endDate: dDate,
+                    endTime: dTime,
+                    tables: tables,
                     chairs: chairs
                 })
             });
@@ -152,14 +197,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (result.status === 'success' && result.data.available) {
-                // Save the base quote
                 cachedQuoteTotal = result.data.quote.total_price;
-                document.getElementById('step1-total').textContent = `$${cachedQuoteTotal.toFixed(2)}`;
-                document.getElementById('step1-quote').classList.remove('hidden');
+                document.getElementById('step2-total').textContent = `$${cachedQuoteTotal.toFixed(2)}`;
+                document.getElementById('step2-quote').classList.remove('hidden');
 
-                // Swap buttons to let user manually continue
-                btnCheck.classList.add('hidden');
-                btnNext1.classList.remove('hidden');
+                btnCheck.parentElement.classList.add('hidden');
+                document.getElementById('btn-next-avail-group').classList.remove('hidden');
             } else {
                 let errorMsg = 'Selected items are not available on this date.';
                 if (result.message) {
@@ -179,37 +222,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- STEP 1 -> STEP 2 (Manual Continue) ---
-    btnNext1.addEventListener('click', () => {
-        currentStep = 2;
-        updateCarousel();
-    });
-
-    // --- STEP 2: Event Details -> Step 3 ---
-    btnNext2.addEventListener('click', () => {
-        if (!validateStep(2)) return;
+    // --- STEP 2 -> STEP 3 ---
+    btnNextAvail.addEventListener('click', () => {
         currentStep = 3;
         updateCarousel();
     });
 
-    // --- STEP 3: Add-ons -> Step 4 (Quote Build) ---
-    btnNext3.addEventListener('click', () => {
+    // --- STEP 3 -> STEP 4 ---
+    btnNextDetails.addEventListener('click', () => {
         if (!validateStep(3)) return;
+        currentStep = 4;
+        updateCarousel();
+    });
 
-        // Calculate Add-ons
+    // --- STEP 4 -> STEP 5 (Quote Build) ---
+    btnNextAddons.addEventListener('click', () => {
+        if (!validateStep(4)) return;
+
         const setupOption = document.querySelector('input[name="setup-option"]:checked');
-        const setupFee = parseFloat(setupOption.dataset.cost || 0);
+        const setupFee = setupOption ? parseFloat(setupOption.dataset.cost || 0) : 0;
 
         const finalTotal = cachedQuoteTotal + setupFee;
         const finalDeposit = finalTotal * 0.50;
 
-        // Update Step 4 DOM
         document.getElementById('final-base').textContent = `$${cachedQuoteTotal.toFixed(2)}`;
         document.getElementById('final-fees').textContent = `$${setupFee.toFixed(2)}`;
         document.getElementById('final-total').textContent = `$${finalTotal.toFixed(2)}`;
         document.getElementById('final-deposit').textContent = `$${finalDeposit.toFixed(2)}`;
 
-        currentStep = 4;
+        const serviceType = document.querySelector('input[name="service-type"]:checked').value;
+        const step5PickupNotice = document.getElementById('step5-pickup-notice');
+        if (serviceType === 'pickup') {
+            step5PickupNotice.classList.remove('hidden');
+            document.getElementById('step5-pickup-time').textContent = document.getElementById('pickup-time').value;
+        } else {
+            step5PickupNotice.classList.add('hidden');
+        }
+
+        currentStep = 5;
         updateCarousel();
     });
 
@@ -223,35 +273,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- STEP 4: Final Booking Submission ---
+    // --- STEP 5: Final Booking Submission ---
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         // Final sanity validation
-        if (!validateStep(4)) return;
+        if (!validateStep(5)) return;
 
         btnSubmit.disabled = true;
         btnSubmit.textContent = 'Submitting...';
         loading.classList.remove('hidden');
 
-        // Gather the massive payload
+        const serviceType = document.querySelector('input[name="service-type"]:checked').value;
+        const addressTypeEl = document.querySelector('input[name="address-type"]:checked');
+
         const payload = {
             action: 'book',
-            // Step 1
-            date: document.getElementById('date-picker').value,
+            serviceType: serviceType,
+            startDate: document.getElementById('pickup-date').value,
+            startTime: document.getElementById('pickup-time').value,
+            endDate: document.getElementById('dropoff-date').value,
+            endTime: document.getElementById('dropoff-time').value,
             tables: document.getElementById('qty-tables').value,
             chairs: document.getElementById('qty-chairs').value,
-            // Step 2
             name: document.getElementById('customer-name').value,
             phone: document.getElementById('customer-phone').value,
-            time: document.getElementById('event-time').value,
-            addressType: document.querySelector('input[name="address-type"]:checked').value,
-            address: document.getElementById('dropoff-address').value,
-            // Step 3
+            addressType: addressTypeEl ? addressTypeEl.value : 'N/A',
+            address: document.getElementById('dropoff-address').value || 'Self Pickup',
             setupOption: document.querySelector('input[name="setup-option"]:checked').value,
             agreeTrash: document.querySelector('input[name="agree-trash"]').checked,
             agreeFolding: document.querySelector('input[name="agree-folding"]').checked,
-            // Step 4
             agreeWaiver: document.querySelector('input[name="agree-waiver"]').checked,
             signature: document.getElementById('e-signature').value
         };
@@ -270,8 +321,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 successPanel.classList.remove('hidden');
 
                 document.getElementById('success-id').textContent = result.data.booking_id;
-                document.getElementById('success-date').textContent = payload.date;
+                document.getElementById('success-date').textContent = `${payload.startDate} to ${payload.endDate}`;
                 document.getElementById('success-deposit').textContent = document.getElementById('final-deposit').textContent;
+
+                const addressContainer = document.getElementById('success-address-container');
+                if (payload.serviceType === 'pickup') {
+                    addressContainer.classList.remove('hidden');
+                    document.getElementById('success-pickup-time').textContent = payload.startTime;
+                } else {
+                    addressContainer.classList.add('hidden');
+                }
             } else {
                 alert('Error processing booking: ' + (result.message || 'Unknown error'));
             }
@@ -311,9 +370,9 @@ document.addEventListener('DOMContentLoaded', () => {
     btnReset.addEventListener('click', () => {
         form.reset();
         cachedQuoteTotal = 0;
-        document.getElementById('step1-quote').classList.add('hidden');
-        btnCheck.classList.remove('hidden');
-        btnNext1.classList.add('hidden');
+        document.getElementById('step2-quote').classList.add('hidden');
+        btnCheck.parentElement.classList.remove('hidden');
+        document.getElementById('btn-next-avail-group').classList.add('hidden');
         successPanel.classList.add('hidden');
         form.classList.remove('hidden');
         currentStep = 1;
