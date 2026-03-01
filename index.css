@@ -120,6 +120,7 @@ h4 {
 
 .carousel-step {
     min-width: 100%;
+    flex: 0 0 100%;
     padding-right: 2px;
     /* Prevent text clipping on right edge */
     transition: opacity 0.3s;
