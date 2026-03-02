@@ -5,8 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setups by Rajshree - Booking Request</title>
-    <!-- Sharp, minimalist geometric font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Sharp, minimalist geometric font (Deferred for performance) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"
+        media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
+    </noscript>
+
     <link rel="stylesheet" href="index.css">
 </head>
 
@@ -333,7 +340,8 @@
                                 <div class="payment-grid">
                                     <div class="qr-container" id="open-qr-modal" style="cursor: pointer;"
                                         title="Tap to view QR full size">
-                                        <img src="qrcode.jpg" alt="Payment QR Code">
+                                        <img src="qrcode.jpg" alt="Payment QR Code" width="120" height="120"
+                                            style="object-fit: cover;">
                                         <div
                                             style="font-size: 0.75rem; text-align: center; color: var(--gray-400); margin-top: 5px;">
                                             Tap QR to enlarge</div>
@@ -350,7 +358,8 @@
                                 <h4>Liability Form / Waiver</h4>
                                 <div class="waiver-scroll" id="open-waiver-modal" style="cursor: pointer;"
                                     title="Click to view full size">
-                                    <img src="waiver.png" alt="Liability Waiver Document">
+                                    <img src="waiver.png" alt="Liability Waiver Document" width="500" height="647"
+                                        style="max-width: 100%; height: auto;">
                                 </div>
                                 <p class="help-text" style="text-align: center; margin-bottom: 1rem;">
                                     <button type="button" id="open-waiver-btn"
@@ -422,12 +431,12 @@
         <div id="image-modal" class="modal-overlay hidden">
             <div class="modal-content">
                 <button type="button" class="modal-close" id="close-modal">&times;</button>
-                <img src="waiver.png" alt="Full Size Liability Waiver" class="modal-image">
+                <img src="waiver.png" alt="Full Size Liability Waiver" class="modal-image" width="800" height="1035">
             </div>
         </div>
     </main>
 
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
     <!-- Replace YOUR_GOOGLE_MAPS_API_KEY with your actual API key to enable the address dropdown -->
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAH9KSOKNqEpu70Wyb6nR0xImRdff1cXz0&libraries=places&callback=initAutocomplete"></script>
