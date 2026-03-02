@@ -116,10 +116,12 @@
                                         <p class="rate">$1.70 / ea</p>
                                     </div>
                                     <div class="quantity-control">
-                                        <button type="button" class="qty-btn minus" data-target="chairs">-</button>
+                                        <button type="button" class="qty-btn minus" data-target="chairs"
+                                            aria-label="Decrease chairs quantity">-</button>
                                         <input type="number" id="qty-chairs" name="qty-chairs" class="qty-input"
-                                            value="0" min="0" required>
-                                        <button type="button" class="qty-btn plus" data-target="chairs">+</button>
+                                            value="0" min="0" required aria-label="Quantity of chairs">
+                                        <button type="button" class="qty-btn plus" data-target="chairs"
+                                            aria-label="Increase chairs quantity">+</button>
                                     </div>
                                 </div>
 
@@ -139,10 +141,12 @@
                                         <p class="rate">$8.00 / ea</p>
                                     </div>
                                     <div class="quantity-control">
-                                        <button type="button" class="qty-btn minus" data-target="tables">-</button>
+                                        <button type="button" class="qty-btn minus" data-target="tables"
+                                            aria-label="Decrease tables quantity">-</button>
                                         <input type="number" id="qty-tables" name="qty-tables" class="qty-input"
-                                            value="0" min="0" required>
-                                        <button type="button" class="qty-btn plus" data-target="tables">+</button>
+                                            value="0" min="0" required aria-label="Quantity of tables">
+                                        <button type="button" class="qty-btn plus" data-target="tables"
+                                            aria-label="Increase tables quantity">+</button>
                                     </div>
                                 </div>
                             </div>
@@ -439,7 +443,7 @@
     <script src="script.js" defer></script>
     <!-- Replace YOUR_GOOGLE_MAPS_API_KEY with your actual API key to enable the address dropdown -->
     <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAH9KSOKNqEpu70Wyb6nR0xImRdff1cXz0&libraries=places&callback=initAutocomplete"></script>
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAH9KSOKNqEpu70Wyb6nR0xImRdff1cXz0&libraries=places&loading=async&callback=initAutocomplete"></script>
 </body>
 
 </html>
