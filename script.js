@@ -430,3 +430,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial setup
     updateCarousel();
 });
+
+// --- Google Places API Autocomplete ---
+// This function is called automatically once the Google Maps script loads
+window.initAutocomplete = function () {
+    const addressInput = document.getElementById('dropoff-address');
+    if (addressInput) {
+        // Initialize autocomplete and restrict it to geographical addresses in the US
+        const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+            types: ['address'],
+            componentRestrictions: { country: 'us' }
+        });
+
+        // Prevent form submission if the user presses "Enter" specifically on the dropdown
+        addressInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    }
+};

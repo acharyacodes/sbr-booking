@@ -318,7 +318,11 @@
                                 style="margin-bottom: 1.5rem; text-align: center;">
                                 <strong>Self Pick-up Details</strong>
                                 <p style="margin-top: 5px; margin-bottom: 5px;">Pick up your equipment at:
-                                    <br><strong>6433 St George Ct, North Richland Hills, TX 76180</strong>
+                                    <br><strong><a
+                                            href="https://www.google.com/maps/search/?api=1&query=6433+St+George+Ct,+North+Richland+Hills,+TX+76180"
+                                            target="_blank"
+                                            style="color: var(--black); text-decoration: underline;">6433 St George Ct,
+                                            North Richland Hills, TX 76180</a></strong>
                                 </p>
                                 <p style="margin: 0; font-size: 0.9em; color: var(--gray-800);">Scheduled Time: <strong
                                         id="step5-pickup-time"></strong></p>
@@ -424,6 +428,9 @@
     </main>
 
     <script src="script.js"></script>
+    <!-- Replace YOUR_GOOGLE_MAPS_API_KEY with your actual API key to enable the address dropdown -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAH9KSOKNqEpu70Wyb6nR0xImRdff1cXz0&libraries=places&callback=initAutocomplete"></script>
 </body>
 
 </html>
