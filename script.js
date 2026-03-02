@@ -431,19 +431,42 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCarousel();
 });
 
-// --- Google Places API Autocomplete ---
+// --- Google Places API Autocomplete (v3 Migration) ---
 // This function is called automatically once the Google Maps script loads
-window.initAutocomplete = function () {
+window.initAutocomplete = async function () {
     const addressInput = document.getElementById('dropoff-address');
-    if (addressInput) {
-        // Initialize autocomplete and restrict it to geographical addresses in the US
-        const autocomplete = new google.maps.places.Autocomplete(addressInput, {
-            types: ['address'],
-            componentRestrictions: { country: 'us' }
+    if (addressInput && google.maps.places.PlaceAutocompleteElement) {
+
+        // Instantiate the new v3 Web Component element
+        const autocomplete = new google.maps.places.PlaceAutocompleteElement({
+            componentRestrictions: { country: ['us'] } // Note: array of strings for v3
         });
 
-        // Prevent form submission if the user presses "Enter" specifically on the dropdown
-        addressInput.addEventListener('keydown', function (e) {
+        autocomplete.id = 'dropoff-autocomplete';
+
+        // Insert the new Web Component into the DOM right before our original input
+        addressInput.parentNode.insertBefore(autocomplete, addressInput);
+
+        // Visually hide our original input but keep it structurally present for required HTML validation.
+        // (Using display:none breaks focusability for browser validation bubbles)
+        addressInput.style.position = 'absolute';
+        addressInput.style.opacity = '0';
+        addressInput.style.height = '0';
+        addressInput.style.padding = '0';
+        addressInput.style.border = 'none';
+
+        // Sync the text value from the Web Component back to our hidden native input
+        autocomplete.addEventListener('gmp-placeselect', (e) => {
+            addressInput.value = autocomplete.inputValue;
+            addressInput.setCustomValidity('');
+        });
+
+        autocomplete.addEventListener('input', () => {
+            addressInput.value = autocomplete.inputValue;
+        });
+
+        // Prevent form submission if the user presses "Enter" specifically inside the component
+        autocomplete.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
             }

@@ -153,9 +153,36 @@ label:not(.radio-label):not(.checkbox-label) {
     margin-bottom: 0.5rem;
 }
 
-input[type="date"],
 input[type="text"],
+input[type="email"],
 input[type="tel"],
+input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+/* Style the new v3 Google Places Web Component to match native inputs */
+gmp-place-autocomplete {
+    width: 100%;
+}
+
+gmp-place-autocomplete::part(input) {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+input[type="date"],
 input[type="time"] {
     padding: 1rem;
     border: 1px solid var(--gray-200);
